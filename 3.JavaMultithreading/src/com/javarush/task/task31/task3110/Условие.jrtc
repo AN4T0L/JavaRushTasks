@@ -1,0 +1,83 @@
+<div class="wdghtml" taskKey="com.javarush.task.task31.task3110.big18">
+<h3>Archiver (18)</h3>
+<p>Ты <em><strong>отличный ученик,</strong></em> я немного подправил твой код, можешь использовать этот архиватор для архивации в повседневной жизни. Если будет время и желание, попробуй добавить операцию изменения степени сжатия архива!</p>
+
+<hr>
+<h3>Archiver (17)</h3>
+<p>Осталась ерунда. Добавить добавление файла в архив. Звучит подозрительно, но именно этим мы и<br />
+займемся. Добавление файлов похоже на удаление, мы создаем временный файл архив, переписываем в него все содержимое старого архива и добавляем новые файлы. Потом заменяем старый файл архива новым.<br />
+1. Добавь публичный метод <mark>void addFiles(List&lt;Path&gt; absolutePathList) throws Exception</mark> в класс <span class="text-corporate"><strong>ZipFileManager</strong></span>, где <mark class="user">absolutePathList</mark> – список абсолютных путей добавляемых файлов.<br />
+<strong>Этот метод должен:</strong><br />
+1.1. Как обычно, бросать исключение <strong><span class="text-yellow">WrongZipFileException</span></strong>, если файл архива не существует<br />
+1.2. Создать временный файл архива<br />
+1.3. Пройти по всем файлам оригинального архива, переписать каждый файл в новый архив, добавить имя переписанного файла в какой-нибудь локальный список.<br />
+1.4. Пройтись по списку добавляемых файлов.<br />
+1.5. Для каждого файла проверить, есть ли он на диске и является ли он обычным файлом, если что-то не так, кинь исключение <mark>PathIsNotFoundException()</mark><br />
+1.6. Проверить, есть ли добавляемый файл уже в архиве (<em>используй список из п.1.3</em>). Такое возможно, если пользователь уже когда-то добавлял его.<br />
+&#8212; Если файла нет в списке, добавь его в новый архив, выведи сообщение, что такой-то файл добавлен в архив<br />
+&#8212; Если файл есть в списке, просто сообщи пользователю, что такой файл уже есть в архиве<br />
+1.7. Заменить оригинальный файл архива временным, в котором уже есть добавленные файлы.<br />
+2. Добавь публичный метод <mark>void addFile(Path absolutePath) throws Exception</mark> в класс <span class="text-corporate"><strong>ZipFileManager</strong></span>, реализуй его с помощью вызова метода <mark>addFiles()</mark>, аналогично тому, как мы это делали для удаления файла.<br />
+3. Реализуй метод <mark>execute()</mark> класса <span class="text-corporate"><strong>ZipAddCommand</strong></span>: все как обычно, но не забудь спросить у пользователя в какой архив и какой файл он хочет добавить, обработай исключение <span class="text-yellow"><strong>PathIsNotFoundException</strong></span>, которое может кинуть метод <mark>addFile()</mark>.<br />
+4. Запусти программу и проверить, что добавление файла теперь работает.</p>
+
+<hr>
+<h3>Archiver (16)</h3>
+<p>Пришло время что-нибудь удалить из архива. Архив очень хитрая штука, нельзя вот так просто взять и<br />
+удалить какой-то элемент внутри него.<br />
+Почему? Представь, что мы решили сами придумать свой алгоритм сжатия текста. Посмотрев исходный текст, мы видим, что в нем часто встречается фраза &#171;<strong><em>быть программистом круто</em></strong>&#171;. Мы можем в месте, где второй, третий, <strong>N</strong>-ый раз встречается наша фраза сделать пометку, что тут была фраза, как в строке <strong>S </strong>начиная с символа номер <strong>K</strong> и длиной <strong>N</strong>, а саму фразу удалить. Когда мы заменим много повторяющихся фраз, текст заметно сократится, но станет нечитаемым для тех, кто не знаком с нашим алгоритмом сжатия.<br />
+Мы же этот текст сможем восстановить (<em>разархивировать</em>). А теперь представь, что нам нужно удалить<br />
+часть текста, на которую ссылались сжатые фрагменты. В такой ситуации, весь наш архив перестанет<br />
+иметь смысл. Вот почему нельзя просто так удалить часть архива. Это очень примерное описание<br />
+варианта архивации, в реальности все намного сложнее.<br />
+Поэтому, чтобы что-то удалить из архива, нужно создать новый архив, переписать в него все, кроме<br />
+удаляемых файлов, а потом заменить старый архив вновь созданным.</p>
+<p>1. Добавь публичный метод для удаления файлов из архива <mark>void removeFiles(List&lt;Path&gt; pathList) throws Exception</mark> в класс <span class="text-corporate"><strong>ZipFileManager</strong></span>. В <span class="text-corporate"><strong>pathList</strong></span> будет передаваться список относительных путей на файлы внутри архива.<br />
+<strong>Он должен:</strong><br />
+1.1. Бросать исключение <span class="text-yellow"><strong>WrongZipFileException</strong></span>, если файл архива не существует<br />
+1.2. Создать временный файл архива с помощью метода <mark>createTempFile()</mark> класса <span class="text-corporate"><strong>Files</strong></span><br />
+1.3. Пройтись по всем файлам оригинального архива, проверить, есть ли текущий файл в списке на удаление.<br />
+&#8212; Если файл есть в списке, вывести сообщение, что мы удалили файл с таким-то именем и перейти к следующему файлу.<br />
+&#8212; Если файла нет в списке на удаление, переписать его в новый архив<br />
+1.4. Заменить оригинальный файл архива временным, в который мы записали нужные файлы. Это нужно сделать с помощью метода <mark>move()</mark> класса <span class="text-corporate"><strong>Files</strong></span><br />
+2. Добавь публичный метод<mark> void removeFile(Path path) throws Exception</mark> в класс <span class="text-corporate"><strong>ZipFileManager</strong></span>, который будет вызывать метод <mark>removeFiles</mark>, создавая список из одного элемента. Это можно сделать с помощью метода <mark>singletonList()</mark> класса <span class="text-corporate"><strong>Collections</strong></span>. Посмотри, как он работает.<br />
+3. Реализуй метод <mark>execute()</mark> класса <span class="text-corporate"><strong>ZipRemoveCommand</strong></span>, создав объект класса <span class="text-corporate"><strong>ZipFileManager</strong></span>, спросив пользователя из какого архива и какой файл будем удалять, и вызвав метод <mark>removeFile()</mark>.<br />
+Все остальное, как и в других командах. Исключение <span class="text-yellow"><strong>PathIsNotFoundException</strong></span> можно не ловить, т.к. метод <mark>removeFile()</mark> не должен его кидать.<br />
+4. Запусти программу и проверить, что удаление файла из архива работает.</p>
+
+<hr>
+<h3>Archiver (15)</h3>
+<p>Пора попробовать что-нибудь распаковать. Для этого добавим публичный метод <mark>void extractAll(Path outputFolder) throws Exception</mark> в класс <span class="text-corporate"><strong>ZipFileManager</strong></span>. <span class="text-corporate"><strong>Path</strong> </span><mark class="user">outputFolder</mark> &#8212; это путь, куда мы будем распаковывать наш архив. У тебя уже большой опыт работы с элементами архива и потоками. Так что, я дам только подсказки по реализации этого метода, а тебе придется хорошенько подумать, как это все сделать:<br />
+1. Проверь, есть ли <strong>zip</strong> файл вообще<br />
+2. Если директория <span class="text-corporate"><strong>outputFolder</strong></span> не существует, то ее нужно создать, как и все папки, внутри которых она лежит.<br />
+3. Внутри архива некоторые файлы могут лежат внутри папок, тогда метод <mark>getName()</mark> элемента архива <span class="text-corporate"><strong>ZipEntry</strong></span>, вернет не совсем имя, как может показаться из названия, а относительный путь внутри архива. Этот относительный путь должен сохраниться и после распаковки, но уже относительно той директории, куда мы распаковали архив<br />
+4. Реализуй метод <mark>execute()</mark> класса <span class="text-corporate"><strong>ZipExtractCommand</strong></span>, по аналогии с таким же методом класса <span class="text-corporate"><strong>ZipCreateCommand</strong></span>, сделай такой же блок <span class="text-neon"><strong>try-catch</strong></span>, только поменяй сообщения выводимые пользователю, чтобы он понял, что сейчас мы будем распаковывать архив, и что нужно ввести полное имя архива и директорию, куда будем распаковывать. Не забудь вызвать метод <mark>extractAll</mark> класса <span class="text-corporate"><strong>ZipFileManager</strong></span>, а не <strong><span class="text-corporate">createZip</span></strong>, как это было в <mark>ZipCreateCommand</mark><br />
+5. Запускай программу и наслаждайся результатом распаковки</p>
+
+<hr>
+<h3>Archiver (14)</h3>
+<p>Все готово, чтобы реализовать метод <mark>execute()</mark> класса <span class="text-corporate"><strong>ZipContentCommand</strong></span>:<br />
+1. Выведи сообщение &#171;<strong><em>Просмотр содержимого архива.</em></strong>&#187;<br />
+2. Создай объект класса <span class="text-corporate"><strong>ZipFileManager</strong></span> с помощью метода <mark>getZipFileManager()</mark><br />
+3. Выведи сообщение &#171;<em><strong>Содержимое архива:</strong></em>&#187;<br />
+4. Получи список файлов архива с помощью метода <mark>getFilesList()</mark><br />
+5. Выведи свойства каждого файла в консоль. Тут нам и пригодится ранее реализованный метод <mark>toString()</mark> класса <span class="text-corporate"><strong>FileProperties</strong></span><br />
+6. Выведи сообщение &#171;<em><strong>Содержимое архива прочитано.</strong></em>&#187;<br />
+7. Запусти программу и проверь, что команда &#171;<em><strong>просмотреть содержимое архива</strong></em>&#187; работает</p>
+
+<hr>
+<h3>Archiver (13)</h3>
+<p>Продолжим наш путь к получению содержимого файла архива. Напишем метод <mark>getFilesList()</mark> в классе <span class="text-corporate"><strong>ZipFileManager</strong></span>. Он будет возвращать список файлов в архиве, вернее список свойств этих файлов (<em>класс свойств </em><strong><span class="text-corporate">FileProperties</span></strong><em> мы уже реализовали</em>).<br />
+<strong>Итак:</strong><br />
+1. Добавь метод <mark>List&lt;FileProperties&gt; getFilesList() throws Exception</mark> в класс <span class="text-corporate"><strong>ZipFileManager</strong></span><br />
+2. Внутри метода проверь является ли содержимое <span class="text-corporate"><strong>zipFile</strong></span> обычным файлом с помощью подходящего метода класса <span class="text-corporate"><strong>Files</strong></span>. Если это не файл, брось исключение <mark>WrongZipFileException(</mark>).<br />
+3. Создай список с элементами типа <span class="text-corporate"><strong>FileProperties</strong></span>, в него мы будем складывать свойства файлов<br />
+4. Создай входящий поток <strong><span class="text-corporate">ZipInputStream</span></strong>, для файла из переменной <span class="text-corporate"><strong>zipFile</strong></span>. Как и в прошлые разы, оберни его создание в <strong><span class="text-neon">try-with-resources</span></strong><br />
+5. Пройдись по всем элементам <span class="text-corporate"><strong>ZipEntry</strong></span> потока <span class="text-corporate"><strong>ZipInputStream</strong></span><br />
+6. Для каждого элемента <span class="text-corporate"><strong>ZipEntry</strong></span> вычитай его содержимое, иначе у нас не будет информации о его размере. Нельзя узнать размер файла в архиве, не вычитав его. Это очень легко сделать с помощью функции copyData, используя временный буфер типа <strong><span class="text-corporate">ByteArrayOutputStream</span></strong>.<br />
+7. Получи имя, размер, сжатый размер и метод сжатия элемента архива. Посмотри, что еще можно узнать о нем.<br />
+8. Создай объект класса <span class="text-corporate"><strong>FileProperties</strong></span>, используя полученные данные о файле.<br />
+9. Добавь созданный объект из <strong>п.8</strong> в список из <strong>п.3</strong><br />
+10. После выхода из цикла верни собранную информацию вызвавшему методу.</p>
+
+</div>
